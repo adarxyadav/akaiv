@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Same eyes — akaiv</title>
+  <meta name="description" content="A tiny game about why a check built from the doer's own eyes isn't a check.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90' font-family='Georgia,serif'>a</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Geist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --ink: #1f1e1b;
+      --muted: #716f68;
+      --accent: #1d4ed8;
+      --red: #c23b2e;
+      --orange: #e0891a;
+      --blend: #c76424;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161513;
+        --ink: #e9e7e2;
+        --muted: #96938b;
+        --accent: #60a5fa;
+        --red: #d4483a;
+        --orange: #f09a2a;
+        --blend: #d97a32;
+      }
+    }
+    * { margin: 0; box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Geist Pixel", sans-serif;
+      font-optical-sizing: auto;
+      font-variation-settings: "ELSH" 0;
+      line-height: 1.65;
+      padding: 2rem 1.25rem 4rem;
+    }
+    main { max-width: 34rem; margin: 0 auto; }
+    .home { font-size: 0.875rem; color: var(--muted); text-decoration: none; }
+    .home:hover { color: var(--accent); }
+    h1 {
+      margin-top: 2rem;
+      font-size: clamp(1.75rem, 6vw, 2.375rem);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .rules { margin-top: 0.75rem; color: var(--muted); }
+    .swatch {
+      display: inline-block;
+      width: 0.8em; height: 0.8em;
+      border-radius: 0.2em;
+      vertical-align: baseline;
+      transition: background 0.25s;
+    }
+    .swatch.red { background: var(--red); }
+    .swatch.orange { background: var(--orange); }
+
+    button {
+      font: inherit;
+      color: var(--ink);
+      background: none;
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      padding: 0.55em 1.4em;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.35; cursor: default; }
+
+    #queue {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .tile {
+      width: 2rem; height: 2rem;
+      padding: 0;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: default;
+      opacity: 1;
+      transition: background 0.25s;
+    }
+    .tile:disabled { opacity: 1; }        /* tiles aren't dimmed; they're just inert until checking */
+    .tile.red { background: var(--red); }
+    .tile.orange { background: var(--orange); }
+    body.worker-eyes .tile { background: var(--blend); }
+    body.worker-eyes .swatch { background: var(--blend); }
+    .tile.drop { opacity: 0; animation: drop 0.4s forwards; }
+    @keyframes drop { to { opacity: 1; } }
+    .checking .tile { cursor: pointer; }
+    .tile.caught { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tile.shake { animation: shake 0.3s; }
+    @keyframes shake {
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+
+    #bins {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+    .bin {
+      flex: 1;
+      border: 1.5px solid var(--muted);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+    }
+    .bin h2 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .grid { display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 4.5rem; align-content: flex-start; }
+
+    .center { text-align: center; }
+    #runWrap { margin-top: 2rem; }
+    #report {
+      margin-top: 2rem;
+      border: 1.5px dashed var(--muted);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      font-variant-numeric: tabular-nums;
+    }
+    #report .status { color: var(--accent); font-weight: 600; }
+    #eyesWrap { margin-top: 1.5rem; }
+    #eyesWrap .nudge { font-style: italic; color: var(--muted); margin-bottom: 0.75rem; }
+    #eyes {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    #eyes:active { background: var(--ink); color: var(--bg); }
+    #checkPhase { margin-top: 2.5rem; }
+    #caption { margin-top: 0.75rem; min-height: 1.65em; color: var(--muted); }
+
+    #final { margin-top: 2rem; }
+    #final .tally { font-variant-numeric: tabular-nums; }
+    .lesson {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--muted);
+    }
+    .lesson h3 { font-weight: 600; font-size: 1.0625rem; }
+    .lesson p { margin-top: 0.75rem; }
+    .again { margin-top: 2.5rem; font-size: 0.9375rem; color: var(--muted); }
+    .again a { color: var(--muted); text-decoration-color: var(--accent); text-underline-offset: 0.2em; }
+    .again a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="home" href="index.html">&larr; akaiv</a>
+    <h1>The worker sorts tiles.</h1>
+    <p class="rules"><span class="swatch red"></span> red goes in the left bin, <span class="swatch orange"></span> orange in the right. It sorts, then it checks its own work. Watch.</p>
+
+    <div id="queue" aria-hidden="true"></div>
+    <p id="runWrap" class="center"><button id="run">Run the shift</button></p>
+
+    <div id="bins" hidden>
+      <div class="bin"><h2>Red bin</h2><div class="grid" id="gridRed"></div></div>
+      <div class="bin"><h2>Orange bin</h2><div class="grid" id="gridOrange"></div></div>
+    </div>
+
+    <div id="report" hidden>
+      Worker&rsquo;s report &mdash; sorted: 12/12. Re-inspected: 12/12. Errors found: 0. <span class="status">Status: done &#10003;</span>
+    </div>
+
+    <div id="eyesWrap" class="center" hidden>
+      <p class="nudge">Something look off? Its check says no. Hold the button to see why.</p>
+      <button id="eyes">Hold: see through the worker&rsquo;s eyes</button>
+    </div>
+
+    <section id="checkPhase" hidden>
+      <p>Your eyes work differently. So <strong>you</strong> be the check: tap every tile sitting in the wrong bin.</p>
+      <p id="caption" aria-live="polite"></p>
+    </section>
+
+    <section id="final" hidden>
+      <p class="tally">Errors the worker&rsquo;s own check found: <strong>0</strong>. Errors you found: <strong id="foundCount"></strong>. Same tiles, same bins &mdash; the only difference is that your eyes aren&rsquo;t its eyes.</p>
+      <div class="lesson">
+        <h3>Why its own check was worthless</h3>
+        <p>The worker never lied. Through its eyes the work really was perfect &mdash; and that&rsquo;s the trap. A check built from the doer&rsquo;s own eyes inherits every blind spot that made the mistakes in the first place: it doesn&rsquo;t verify the work, it re-counts the mistake. This is why a programmer&rsquo;s own tests pass the programmer&rsquo;s own bug, and why an AI agent asked to grade its own answer finds it excellent. Honesty doesn&rsquo;t fix it &mdash; the worker was honest. The fix is structural: the check comes from outside, from eyes that don&rsquo;t share the doer&rsquo;s blind spots and sit outside the doer&rsquo;s reach.</p>
+      </div>
+      <p class="again"><a href="same-eyes.html">Run another shift</a> &middot; <a href="index.html">akaiv</a></p>
+    </section>
+  </main>
+
+  <script>
+    const queueEl = document.getElementById('queue');
+    const gridRed = document.getElementById('gridRed');
+    const gridOrange = document.getElementById('gridOrange');
+    const caption = document.getElementById('caption');
+
+    // 6 red + 6 orange, shuffled; 3–4 land in the wrong bin
+    const tiles = [];
+    const colors = [...Array(6).fill('red'), ...Array(6).fill('orange')]
+      .sort(() => Math.random() - 0.5);
+    const wrongCount = 3 + (Math.random() < 0.5 ? 1 : 0);
+    const wrongIdx = new Set();
+    while (wrongIdx.size < wrongCount) wrongIdx.add(Math.floor(Math.random() * 12));
+
+    colors.forEach((color, i) => {
+      const el = document.createElement('button');
+      el.className = 'tile ' + color;
+      el.disabled = true;
+      el.setAttribute('aria-label', color + ' tile');
+      queueEl.appendChild(el);
+      tiles.push({ el, color, wrong: wrongIdx.has(i) });
+    });
+
+    let caught = 0, checking = false, eyesUsed = false;
+    const homeGrid = t => t.color === 'red' ? gridRed : gridOrange;
+    const awayGrid = t => t.color === 'red' ? gridOrange : gridRed;
+
+    document.getElementById('run').addEventListener('click', () => {
+      queueEl.hidden = true;
+      document.getElementById('runWrap').hidden = true;
+      document.getElementById('bins').hidden = false;
+      tiles.forEach((t, i) => {
+        t.el.style.animationDelay = (i * 70) + 'ms';
+        t.el.classList.add('drop');
+        (t.wrong ? awayGrid(t) : homeGrid(t)).appendChild(t.el);
+      });
+      setTimeout(() => {
+        tiles.forEach(t => t.el.classList.remove('drop')); // ponytail: animation is done; drop the class so later reflows (shake, appendChild) can't restart it
+        document.getElementById('report').hidden = false;
+        document.getElementById('eyesWrap').hidden = false;
+      }, 12 * 70 + 500);
+    });
+
+    // Hold to borrow the worker's eyes: red and orange collapse into one color
+    const eyesBtn = document.getElementById('eyes');
+    function eyesOn() { document.body.classList.add('worker-eyes'); }
+    function eyesOff() {
+      document.body.classList.remove('worker-eyes');
+      if (!eyesUsed) {
+        eyesUsed = true;
+        checking = true;
+        document.getElementById('checkPhase').hidden = false;
+        document.getElementById('bins').classList.add('checking');
+        tiles.forEach(t => t.el.disabled = false);
+      }
+    }
+    eyesBtn.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      eyesBtn.setPointerCapture(e.pointerId);
+      eyesOn();
+    });
+    eyesBtn.addEventListener('pointerup', eyesOff);
+    eyesBtn.addEventListener('pointercancel', eyesOff);
+    eyesBtn.addEventListener('contextmenu', e => e.preventDefault());
+    eyesBtn.addEventListener('keydown', e => {
+      if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); eyesOn(); }
+    });
+    eyesBtn.addEventListener('keyup', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); eyesOff(); }
+    });
+    window.addEventListener('blur', () => document.body.classList.remove('worker-eyes'));
+
+    tiles.forEach(t => {
+      t.el.addEventListener('click', () => {
+        if (!checking) return;
+        if (t.wrong) {
+          t.wrong = false;
+          caught++;
+          homeGrid(t).appendChild(t.el);
+          t.el.classList.add('caught');
+          if (caught === wrongCount) {
+            caption.textContent = 'That’s all of them.';
+            checking = false;
+            document.getElementById('foundCount').textContent = caught;
+            setTimeout(() => { document.getElementById('final').hidden = false; }, 600);
+          } else {
+            caption.textContent = 'Caught — it belongs in the ' + t.color + ' bin. ' + caught + ' so far.';
+          }
+        } else {
+          t.el.classList.remove('shake');
+          void t.el.offsetWidth;   // restart the animation
+          t.el.classList.add('shake');
+          caption.textContent = 'That one’s where it belongs.';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

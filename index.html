@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>akaiv</title>
+  <meta name="description" content="Interactive explainers — one idea per page, built to be felt, not just read.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90' font-family='Georgia,serif'>a</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Geist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --ink: #1f1e1b;
+      --muted: #716f68;
+      --accent: #1d4ed8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161513;
+        --ink: #e9e7e2;
+        --muted: #96938b;
+        --accent: #60a5fa;
+      }
+    }
+    * { margin: 0; box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Geist Pixel", sans-serif;
+      font-optical-sizing: auto;
+      font-variation-settings: "ELSH" 0;
+      padding: 2rem;
+    }
+    main {
+      max-width: 26rem;
+    }
+    h1 {
+      font-size: clamp(3rem, 10vw, 4.5rem);
+      font-weight: 400;
+      letter-spacing: 0.015em;
+      line-height: 1;
+    }
+    h1 span {
+      color: var(--accent);
+    }
+    .what {
+      margin-top: 1.5rem;
+      font-size: 1.125rem;
+      line-height: 1.65;
+    }
+    /* ponytail: the site's one promise is interaction — so its one styled word answers touch */
+    .felt {
+      font-style: italic;
+      color: var(--accent);
+      border-bottom: 1px dotted var(--accent);
+      cursor: default;
+      transition: letter-spacing 0.25s ease;
+    }
+    .felt:hover, .felt:active {
+      letter-spacing: 0.08em;
+    }
+    .next {
+      margin-top: 2.5rem;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .next a {
+      color: var(--muted);
+      text-decoration-color: var(--accent);
+      text-underline-offset: 0.2em;
+    }
+    .next a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>akaiv<span>.</span></h1>
+    <p class="what">Interactive explainers — one idea per page, built to be <em class="felt">felt</em>, not just read.</p>
+    <p class="next">First up: <a href="same-eyes.html">why the one who does the work should never be the one who grades it</a>.</p>
+  </main>
+</body>
+</html>
