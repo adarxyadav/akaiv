@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two doors — akaiv</title>
+  <meta name="description" content="A one-minute experiment on your own memory: the same words, behind two different doors.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90' font-family='Georgia,serif'>a</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Geist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --ink: #1f1e1b;
+      --muted: #716f68;
+      --accent: #1d4ed8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161513;
+        --ink: #e9e7e2;
+        --muted: #96938b;
+        --accent: #60a5fa;
+      }
+    }
+    * { margin: 0; box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Geist Pixel", sans-serif;
+      font-optical-sizing: auto;
+      font-variation-settings: "ELSH" 0;
+      line-height: 1.65;
+      padding: 2rem 1.25rem 4rem;
+    }
+    main { max-width: 34rem; margin: 0 auto; }
+    .home { font-size: 0.875rem; color: var(--muted); text-decoration: none; }
+    .home:hover { color: var(--accent); }
+    h1 {
+      margin-top: 2rem;
+      font-size: clamp(1.75rem, 6vw, 2.375rem);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .lead { margin-top: 0.75rem; color: var(--muted); }
+    section { margin-top: 2rem; }
+    .doorname { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+    .ask { margin-top: 0.375rem; }
+
+    button {
+      font: inherit;
+      color: var(--ink);
+      background: none;
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      padding: 0.55em 1.4em;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.35; cursor: default; }
+    .go { margin-top: 1.5rem; }
+
+    #studywords, #grid {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+    @media (min-width: 26rem) { #studywords, #grid { grid-template-columns: repeat(4, 1fr); } }
+    .word {
+      text-align: center;
+      padding: 0.5em 0.25em;
+      border: 1.5px solid transparent;
+      border-radius: 0.5rem;
+    }
+    #studywords .word { border-color: var(--muted); }
+    #grid .word { border-color: var(--muted); cursor: pointer; background: none; font: inherit; color: var(--ink); }
+    #grid .word[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+    #clock { margin-top: 1rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    textarea {
+      width: 100%;
+      margin-top: 1.5rem;
+      font: inherit;
+      color: var(--ink);
+      background: none;
+      border: 1.5px solid var(--muted);
+      border-radius: 0.5rem;
+      padding: 0.75em;
+      min-height: 5.5em;
+      resize: vertical;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+
+    .scores { margin-top: 1.5rem; display: flex; gap: 1rem; }
+    .score { flex: 1; border: 1.5px solid var(--muted); border-radius: 0.5rem; padding: 1rem; text-align: center; }
+    .score strong { display: block; font-size: 2rem; font-weight: 400; }
+    .score.win { border-color: var(--accent); }
+    .score.win strong { color: var(--accent); }
+    .score small { color: var(--muted); }
+    .fine { margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted); }
+    .lesson { margin-top: 1.5rem; }
+    .again { margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="home" href="index.html">akaiv</a>
+    <h1>Two doors.</h1>
+
+    <section id="intro">
+      <p class="lead">A one-minute experiment on your own memory. You'll see eight words for eight seconds. Memorize what you can.</p>
+      <button class="go" id="start">Start</button>
+    </section>
+
+    <section id="study" hidden>
+      <p class="ask">Memorize these.</p>
+      <div id="studywords"></div>
+      <p id="clock">8</p>
+    </section>
+
+    <section id="recall" hidden>
+      <p class="doorname">Door one — recall</p>
+      <p class="ask">Type the words you remember, in any order.</p>
+      <textarea id="typed" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+      <button class="go" id="recalldone">Done</button>
+    </section>
+
+    <section id="recognize" hidden>
+      <p class="doorname">Door two — recognition</p>
+      <p class="ask">Same memory, new door. Tap the words you saw.</p>
+      <div id="grid"></div>
+      <button class="go" id="recogdone">Done</button>
+    </section>
+
+    <section id="result" hidden>
+      <div class="scores">
+        <div class="score" id="recallscore"><strong></strong>recall<br><small>generated from a blank page</small></div>
+        <div class="score" id="recogscore"><strong></strong>recognition<br><small>verified on sight</small></div>
+      </div>
+      <p class="fine" id="alarms"></p>
+      <p class="lesson">Same memory, two doors. Recall asks your mind to <em>generate</em> the past from nothing; recognition only asks it to <em>verify</em> what's put in front of it. Most of what you "forgot" at door one was still in there — it needed the easier door.</p>
+      <p class="lesson">Worth building around: when you want someone's <em>judgment</em>, hand them options to recognize. Make them generate from blank only when generating is the skill being trained.</p>
+      <button class="again" id="again">Again, fresh words</button>
+    </section>
+  </main>
+
+  <script>
+    // Pure logic — kept DOM-free so it can be sanity-checked outside the page.
+    const norm = w => w.toLowerCase().replace(/[^a-z]/g, "").replace(/s$/, "");
+    const scoreRecall = (text, targets) => {
+      const typed = new Set(text.split(/[\s,;]+/).map(norm).filter(Boolean));
+      return targets.filter(t => typed.has(norm(t))).length;
+    };
+    const scoreRecog = (picked, targets) => ({
+      hits: picked.filter(w => targets.includes(w)).length,
+      alarms: picked.filter(w => !targets.includes(w)).length,
+    });
+    const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+    // Lures share a category with a target so door two is honest, still easier.
+    const SETS = [
+      { targets: ["anchor", "violin", "cactus", "lantern", "pigeon", "hammer", "biscuit", "umbrella"],
+        lures:   ["telescope", "guitar", "fern", "candle", "sparrow", "wrench", "pretzel", "raincoat"] },
+      { targets: ["kettle", "walrus", "trumpet", "ladder", "mitten", "peach", "barrel", "magnet"],
+        lures:   ["teapot", "seal", "trombone", "staircase", "glove", "plum", "bucket", "compass"] },
+    ];
+
+    const $ = id => document.getElementById(id);
+    const phases = ["intro", "study", "recall", "recognize", "result"];
+    const show = name => phases.forEach(p => $(p).hidden = p !== name);
+
+    let setIx = Math.floor(Math.random() * SETS.length);
+    let set, timer;
+
+    function startRun() {
+      set = SETS[setIx];
+      setIx = (setIx + 1) % SETS.length;
+      $("studywords").innerHTML = shuffle(set.targets).map(w => `<div class="word">${w}</div>`).join("");
+      $("typed").value = "";
+      show("study");
+      let left = 8;
+      $("clock").textContent = left;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        left -= 1;
+        $("clock").textContent = left;
+        if (left === 0) { clearInterval(timer); show("recall"); $("typed").focus(); }
+      }, 1000);
+    }
+
+    function buildGrid() {
+      $("grid").innerHTML = shuffle(set.targets.concat(set.lures))
+        .map(w => `<button class="word" type="button" aria-pressed="false">${w}</button>`).join("");
+      $("grid").querySelectorAll(".word").forEach(b =>
+        b.addEventListener("click", () => b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true")));
+    }
+
+    $("start").addEventListener("click", startRun);
+    $("again").addEventListener("click", startRun);
+
+    $("recalldone").addEventListener("click", () => {
+      const n = scoreRecall($("typed").value, set.targets);
+      $("recallscore").querySelector("strong").textContent = `${n}/8`;
+      buildGrid();
+      show("recognize");
+    });
+
+    $("recogdone").addEventListener("click", () => {
+      const picked = [...$("grid").querySelectorAll('[aria-pressed="true"]')].map(b => b.textContent);
+      const { hits, alarms } = scoreRecog(picked, set.targets);
+      const recallN = parseInt($("recallscore").querySelector("strong").textContent, 10);
+      $("recogscore").querySelector("strong").textContent = `${hits}/8`;
+      $("recogscore").classList.toggle("win", hits > recallN);
+      $("recallscore").classList.toggle("win", recallN > hits);
+      $("alarms").textContent = alarms
+        ? `(door two also let ${alarms} impostor${alarms === 1 ? "" : "s"} through — verifying is easier, not infallible)`
+        : "";
+      show("result");
+    });
+  </script>
+</body>
+</html>

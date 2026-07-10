@@ -17,7 +17,7 @@
 **Before building**
 
 1. **Everything starts as a ticket** in [docs/tickets.md](docs/tickets.md). No ticket, no work.
-2. **Find your unknowns.** New territory → blind-spot pass; write the open questions under the ticket before starting.
+2. **Find your unknowns.** New territory → blind-spot pass; write the open questions under the ticket before starting. Each question is a fact or a decision: facts the agent digs up itself; decisions go to the human, one at a time.
 3. **Study before borrowing.** Anything we learn from gets a `docs/<name>-study.md`: what it is, what's worth stealing, what it changed for us. The source itself is saved verbatim to `docs/raw/` — read, never edited. Studies link the related studies and the rules they produced.
 
 **While building**
@@ -31,6 +31,10 @@
 7. **Explain, then quiz on big work.** When the agent builds something substantial, it writes a short explainer — background first, intuition before details, changes walked through as prose — then quizzes you; the ticket closes only when you pass. We understand to participate in the next loop, not just to verify this one; the quiz is the speed regulator.
 8. **Leave the docs clean.** Fix or delete anything stale, contradictory, or orphaned. Short beats complete — a stale complete page is worse than a fresh short one. Every so often, raise a lint ticket: contradictions, superseded claims, orphan pages, missing links.
 
+## How we talk
+
+Replies serve the human's retention and judgment, not the agent's display of work. Lead with the thesis, then pin each mechanism to a concrete artifact — a file, a command, a line — because the why sticks and the how flattens without an anchor. Messages arrive by voice dictation: read mangled words phonetically, state the interpretation in one line, proceed. Prose over fragment-lists; a list only when the items are genuinely parallel. When a session's answer is worth keeping, say so and file it (rule 6) instead of letting it evaporate into chat.
+
 ## Doc map
 
 The doc map below is the index; when it outgrows a glance (~10+ docs), split it into `docs/index.md`.
@@ -40,4 +44,4 @@ The doc map below is the index; when it outgrows a glance (~10+ docs), split it 
 - `docs/log.md` — history, append-only
 - `docs/<name>-study.md` — one per system studied. So far: none
 - `docs/raw/` — studied sources, saved verbatim; read, never edited (created with the first study)
-- `.claude/skills/` — the toolbox. So far: [/explain-diff](.claude/skills/explain-diff/SKILL.md) (inherited from Whetstone)
+- `.claude/skills/` — the toolbox, synced from Whetstone 2026-07-09: the loop as skills. [ticket](.claude/skills/ticket/SKILL.md) (open work: unknowns sorted fact-or-decision, check named), [work](.claude/skills/work/SKILL.md) (one ticket, smallest verified step), [close](.claude/skills/close/SKILL.md) (retire through the check; explainer + quiz on big work), [file-back](.claude/skills/file-back/SKILL.md) (model-invoked rule 6), [study](.claude/skills/study/SKILL.md) (rule 3's loop), [lint](.claude/skills/lint/SKILL.md) (rule 8 sweep, script in `tools/lint-docs.py`), [fork](.claude/skills/fork/SKILL.md) + [retrofit](.claude/skills/retrofit/SKILL.md) (run from the stone), [explain-diff](.claude/skills/explain-diff/SKILL.md) (the engine /close drives)

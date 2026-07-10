@@ -20,8 +20,19 @@ Revised 2026-07-07: akaiv.in was already live on Vercel (project `akaiv-app`, a 
 
 One idea: whoever does the work doesn't grade it. Reader has zero context; the page makes them feel the mechanism through interaction, then a one-paragraph lesson lands. One page, linked from index.html.
 
-- [ ] Explainer #1 — user picks the interaction concept, then it ships as one page. Check: the user plays it and calls it done — the builder doesn't; rule 7 quiz before closing. 2026-07-06: all three sketches built as working drafts; user locked **same-eyes.html** (worker whose self-check shares its blind spot) — the-bar and own-cut deleted. Remaining: user playtest, rule 7 explainer + quiz.
+- [ ] Explainer #1 — user picks the interaction concept, then it ships as one page. Check: the user plays it and calls it done — the builder doesn't; rule 7 quiz before closing. 2026-07-06: all three sketches built as working drafts; user locked **same-eyes.html** (worker whose self-check shares its blind spot) — the-bar and own-cut deleted. 2026-07-10: user playtest passed. Remaining: rule 7 explainer + quiz.
 
 **Unknowns (blind-spot pass):**
 - Which interaction makes the mechanism *felt* — settled by the user picking among sketches, not specified upfront.
 - Does the lesson survive a reader with zero context — only the user's playtest answers this.
+
+## Page #2 — new page, idea to pick
+
+Arriving work 2026-07-09, routed via /ticket (the skill's first real run). Explainer #1 above is still open — playtest and quiz pending — so page #2's place in line is the human's call; nothing here starts until /work gets the go.
+
+- [ ] Page #2 — user picks the idea, then it ships as one page linked from index.html. Check: the user opens the deployed page and confirms the mechanism is felt, not read — the builder doesn't call it done; rule 7 explainer + quiz before closing. 2026-07-10: local playtest passed; linked from index and deployed. Remaining: user confirms once on the deployed page, rule 7 explainer + quiz.
+
+**Unknowns (blind-spot pass):**
+- ~~Decision: which idea~~ — settled 2026-07-09: **recognition over recall**, the user picked the recommendation — a self-experiment the reader runs on their own memory (fail recall, then pass recognition on the same content, inside a minute); the mechanism our own quiz practice proved on its owner. Pool rested: the bet, Litt's bottleneck, two loads, facts vs decisions, fog or ticket, no silent exits.
+- Decision (user, later): the interaction that carries the picked idea — 2026-07-09: one working draft built (`two-doors.html`: eight words for eight seconds → door one, recall typed from blank → door two, recognition among category-matched lures → scores side by side, lesson lands after), deviating from the three-sketch spread: this mechanism has one canonical experiment shape, alternates on demand at playtest. 2026-07-10: playtest run, mechanism felt — no alternate needed.
+- Fact (dug): plain HTML/CSS/JS, no build step, Vercel project `akaiv-app` — a new page is one HTML file plus a link from index.html; deploy is push-and-done.
